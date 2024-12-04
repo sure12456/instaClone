@@ -1,5 +1,5 @@
 import { Text } from 'react-native'
 
-export default function Tab() {
-    return <Text>Tabs</Text>
+export default function ProfileScreen() {
+    return <Text>ProfileScreen</Text>
 }
