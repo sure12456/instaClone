@@ -1,5 +1,5 @@
 import { Text } from 'react-native'
 
 export default function Tab() {
-    return <Text>Tabs</Text>
+    return <Text>This is the Home Screen</Text>
 }
