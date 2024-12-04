@@ -7,7 +7,7 @@ const post1 = posts[0]
 
 export default function FeedScreen() {
 
-    console.log(post1)
+    // console.log(post1)
     return (
         <FlatList 
             data={posts}

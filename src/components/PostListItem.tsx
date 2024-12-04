@@ -6,7 +6,7 @@ import { AntDesign, Ionicons, Feather } from '@expo/vector-icons'
 const post1 = posts[0]
 
 export default function PostListItem({ post }) {
-    console.log(post)
+    // console.log(post)
     return (
         <View className='bg-white'>
             {/* Header */}
