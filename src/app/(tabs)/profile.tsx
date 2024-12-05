@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '~/src/lib/supabase'
-import { StyleSheet, View, Alert, TextInput } from 'react-native'
-import { Session } from '@supabase/supabase-js'
+import { StyleSheet, View, Alert, TextInput, Text, Image } from 'react-native'
+// import { Session } from '@supabase/supabase-js'
 import Button from '~/src/components/Button'
+import { useAuth } from '~/src/providers/AuthProvider'
+import * as ImagePicker from 'expo-image-picker';
 
-export default function Account({ session }: { session: Session }) {
+
+
+export default function Account() {
+    const { session } = useAuth();
   const [loading, setLoading] = useState(true)
   const [username, setUsername] = useState('')
   const [website, setWebsite] = useState('')
@@ -77,16 +82,63 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+    const [image, setImage] = useState<string | null>(null);
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'],
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 1,
+        });
+    
+        console.log(result);
+    
+        if (!result.canceled) {
+          setImage(result.assets[0].uri);
+        }
+      };
+
   return (
     <View style={styles.container}>
+        {image? (
+            <Image 
+            source={{ uri: image}}
+            className='w-52 aspect-square rounded-full self-center bg-slate-300'
+        />
+        ) : (
+            <View
+                className='w-52 aspect-square rounded-full self-center bg-slate-300'
+            >
+            </View>
+        )}
+        <Text 
+            onPress={pickImage} 
+            className='font-semibold m-5 self-center text-blue-500'>Change
+        </Text>
+
+
+
       <View style={[styles.verticallySpaced, styles.mt20]}>
-        <TextInput value={session?.user?.email} disabled />
+        <Text className='text-gray-500 font-semibold mb-2 ml-2'>
+            Email
+        </Text>
+        <TextInput 
+            className='p-3 rounded-md border border-gray-300' value={session?.user?.email} disabled />
       </View>
       <View style={styles.verticallySpaced}>
-        <TextInput value={username || ''} onChangeText={(text) => setUsername(text)} />
+        <Text className='text-gray-500 font-semibold mb-2 ml-2'>
+            Username
+        </Text>
+        <TextInput 
+            className='p-3 rounded-md border border-gray-300' value={username || ''} onChangeText={(text) => setUsername(text)} />
       </View>
       <View style={styles.verticallySpaced}>
-        <TextInput value={website || ''} onChangeText={(text) => setWebsite(text)} />
+        <Text className='text-gray-500 font-semibold mb-2 ml-2'>
+            Website
+        </Text>
+        <TextInput 
+            className='p-3 rounded-md border border-gray-300' value={website || ''} onChangeText={(text) => setWebsite(text)} />
       </View>
 
       <View style={[styles.verticallySpaced, styles.mt20]}>
@@ -111,7 +163,7 @@ const styles = StyleSheet.create({
   },
   verticallySpaced: {
     paddingTop: 4,
-    paddingBottom: 4,
+    paddingBottom: 10,
     alignSelf: 'stretch',
   },
   mt20: {
