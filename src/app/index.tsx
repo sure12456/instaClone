@@ -3,6 +3,6 @@ import { Text } from 'react-native'
 
 
 export default function Home() {
-    return <Redirect href="/(tabs)/" />
+    return <Redirect href="/(auth)" />
 }
 
