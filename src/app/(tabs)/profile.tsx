@@ -1,66 +1,120 @@
-import { Text, View, Image, TextInput } from 'react-native'
-import * as ImagePicker from 'expo-image-picker';
-import { useState, useEffect } from 'react';
-import Button from '~/src/components/Button';
-import { supabase } from '~/src/lib/supabase';
+import { useState, useEffect } from 'react'
+import { supabase } from '~/src/lib/supabase'
+import { StyleSheet, View, Alert, TextInput } from 'react-native'
+import { Session } from '@supabase/supabase-js'
+import Button from '~/src/components/Button'
 
-export default function ProfileScreen() {
-    
-    const [image, setImage] = useState<string | null>(null);
-    const [username, setUsername] = useState('')
+export default function Account({ session }: { session: Session }) {
+  const [loading, setLoading] = useState(true)
+  const [username, setUsername] = useState('')
+  const [website, setWebsite] = useState('')
+  const [avatarUrl, setAvatarUrl] = useState('')
 
-    const pickImage = async () => {
-        // No permissions request is necessary for launching the image library
-        let result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          allowsEditing: true,
-          aspect: [1, 1],
-          quality: 1,
-        });
-    
-        console.log(result);
-    
-        if (!result.canceled) {
-          setImage(result.assets[0].uri);
-        }
-      };
+  useEffect(() => {
+    if (session) getProfile()
+  }, [session])
 
+  async function getProfile() {
+    try {
+      setLoading(true)
+      if (!session?.user) throw new Error('No user on the session!')
 
-    return (
-    <View className='flex-1'>
-        {/* Avatar Image picker */}
-        {image? (
-            <Image 
-            source={{ uri: image}}
-            className='w-52 aspect-square rounded-full self-center bg-slate-300'
+      const { data, error, status } = await supabase
+        .from('profiles')
+        .select(`username, website, avatar_url`)
+        .eq('id', session?.user.id)
+        .single()
+      if (error && status !== 406) {
+        throw error
+      }
+
+      if (data) {
+        setUsername(data.username)
+        setWebsite(data.website)
+        setAvatarUrl(data.avatar_url)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function updateProfile({
+    username,
+    website,
+    avatar_url,
+  }: {
+    username: string
+    website: string
+    avatar_url: string
+  }) {
+    try {
+      setLoading(true)
+      if (!session?.user) throw new Error('No user on the session!')
+
+      const updates = {
+        id: session?.user.id,
+        username,
+        website,
+        avatar_url,
+        updated_at: new Date(),
+      }
+
+      const { error } = await supabase.from('profiles').upsert(updates)
+
+      if (error) {
+        throw error
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        Alert.alert(error.message)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <View style={styles.container}>
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <TextInput value={session?.user?.email} disabled />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <TextInput value={username || ''} onChangeText={(text) => setUsername(text)} />
+      </View>
+      <View style={styles.verticallySpaced}>
+        <TextInput value={website || ''} onChangeText={(text) => setWebsite(text)} />
+      </View>
+
+      <View style={[styles.verticallySpaced, styles.mt20]}>
+        <Button
+          title={loading ? 'Loading ...' : 'Update'}
+          onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}
+          disabled={loading}
         />
-        ) : (
-            <View
-                className='w-52 aspect-square rounded-full self-center bg-slate-300'
-            >
-            </View>
-        )}
-        <Text 
-            onPress={pickImage} 
-            className='font-semibold m-5 self-center text-blue-500'>Change
-        </Text>
+      </View>
 
-        <Text className='text-gray-500 font-semibold mb-2 ml-2'>
-            Username
-        </Text>
-        <TextInput 
-            value={username}
-            onChangeText={(text) => setUsername(text)}
-            placeholder='Username'
-            className='p-3 rounded-md border border-gray-300'
-        />
-
-        <View className='gap-2 mt-auto'>
-            <Button title="Update profile"/>
-            <Button title="Sign out" onPress={() => supabase.auth.signOut()}/>
-        </View>
-
-
+      <View style={styles.verticallySpaced}>
+        <Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+      </View>
     </View>
-    )
+  )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginTop: 40,
+    padding: 12,
+  },
+  verticallySpaced: {
+    paddingTop: 4,
+    paddingBottom: 4,
+    alignSelf: 'stretch',
+  },
+  mt20: {
+    marginTop: 20,
+  },
+})

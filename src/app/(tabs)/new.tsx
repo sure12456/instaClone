@@ -3,11 +3,16 @@ import { useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/src/components/Button';
 import { uploadImage } from '~/src/lib/cloudinary';
+import { supabase } from '~/src/lib/supabase';
+import { useAuth } from '~/src/providers/AuthProvider';
+import { router } from 'expo-router';
 
 export default function CreatPost() {
 
     const [caption, setCaption] = useState('')
     const [image, setImage] = useState<string | null>(null);
+
+    const { session } = useAuth();
 
     useEffect(() => {
         if(!image) {
@@ -41,6 +46,20 @@ export default function CreatPost() {
         console.log("Sent for upload")
         const response = await uploadImage(image);
         console.log("Image Id: ", response?.public_id)
+        
+        const { data, error } = await supabase
+        .from('posts')
+        .insert([
+        { 
+            caption, 
+            image: response?.public_id, 
+            user_id: session?.user.id 
+        },
+        ])
+        .select()
+
+        router.push('/(tabs)');
+        
         // later it is going to store the post in database.
     }
 
