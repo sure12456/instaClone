@@ -1,6 +1,7 @@
 import { Image, Text, View, TextInput, Pressable } from 'react-native'
 import { useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
+import Button from '~/src/components/Button';
 
 export default function CreatPost() {
 
@@ -55,9 +56,7 @@ export default function CreatPost() {
             />
 
             <View className='mt-auto w-full'>
-                <Pressable className='bg-blue-500 w-full p-3 items-center rounded-lg'>
-                    <Text className='text-white font-semibold'>Share</Text>
-                </Pressable>
+                <Button title="Share"/>
             </View>
             
 
