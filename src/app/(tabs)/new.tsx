@@ -2,6 +2,7 @@ import { Image, Text, View, TextInput, Pressable } from 'react-native'
 import { useEffect, useState } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import Button from '~/src/components/Button';
+import { uploadImage } from '~/src/lib/cloudinary';
 
 export default function CreatPost() {
 
@@ -22,7 +23,7 @@ export default function CreatPost() {
           mediaTypes: ['images'],
           allowsEditing: true,
           aspect: [4, 3],
-          quality: 1,
+          quality: 0.5,
         });
     
         console.log(result);
@@ -31,6 +32,17 @@ export default function CreatPost() {
           setImage(result.assets[0].uri);
         }
       };
+
+    const createpost = async () => {
+                
+        if (!image) {
+            return;
+        }
+        console.log("Sent for upload")
+        const response = await uploadImage(image);
+        console.log("Image Id: ", response?.public_id)
+        // later it is going to store the post in database.
+    }
 
     return (
         <View className='p-3 items-center flex-1'>
@@ -56,7 +68,7 @@ export default function CreatPost() {
             />
 
             <View className='mt-auto w-full'>
-                <Button title="Share"/>
+                <Button title="Share" onPress={createpost}/>
             </View>
             
 
