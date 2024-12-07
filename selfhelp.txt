@@ -1,0 +1,22 @@
+An Instagram clone
+
+A lot of errors while deploying APK (production build): (Note to self)
+
+1. App worked fine in expo, but stuck on blank white screen - safearea content with different color and status bar with slightly different color. 
+2. This mainly occured in the real app which I was building(VPS). So had to test the same operation on this, as this is a less resource intensive app comparitively.
+3. I couldn't get error details except blank screen on phone, and EAS build is taking more time and I am running out of free builds, so had to do build locally. 
+4. Tried to do it in vscode itself with 'npx react-native run-android'
+5. Faced a lot of issues with that process as well, first ran npx prebuild to get the android folder and files like build.gradle, app/build.gradle etc. 
+6. Few issues faced are NDK version not matching, editing version in build.gradle, CMake updating, installing NDK which wasn't even there at first, found that there is no folder realted to it in SDK.
+7. Few commands I used to frequently - 
+    ./gradlew clean in android foler
+    npx react-native run-android
+    npx expo start --reset -cache
+
+8. What worked, not sure completely -
+    installing react-native-reanimated to lower version 2.20.2
+    intalling react-native to 0.76.3
+    added [=, this] in reanimated subfiles, but this must be realted to reanimated version issue, just installing the lower version as mentioned above solved it, I guess. Will change this point if I find any other observation. 
+
+
+will add more if required...

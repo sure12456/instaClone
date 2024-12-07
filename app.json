@@ -2,7 +2,7 @@
   "expo": {
     "name": "Instagram",
     "slug": "Instagram",
-    "scheme": "Instagram",
+    "scheme": "instagram",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

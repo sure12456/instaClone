@@ -124,7 +124,7 @@ export default function Account() {
             Email
         </Text>
         <TextInput 
-            className='p-3 rounded-md border border-gray-300' value={session?.user?.email} disabled />
+            className='p-3 rounded-md border border-gray-300' value={session?.user?.email} />
       </View>
       <View style={styles.verticallySpaced}>
         <Text className='text-gray-500 font-semibold mb-2 ml-2'>
@@ -145,7 +145,6 @@ export default function Account() {
         <Button
           title={loading ? 'Loading ...' : 'Update'}
           onPress={() => updateProfile({ username, website, avatar_url: avatarUrl })}
-          disabled={loading}
         />
       </View>
 
